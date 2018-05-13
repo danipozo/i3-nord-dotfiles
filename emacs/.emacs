@@ -10,16 +10,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-;; '(ansi-color-names-vector
-;;   ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
-;; '(custom-enabled-themes (quote (tsdh-dark)))
- ;; '(custom-safe-themes
- ;;   (quote
- ;;    ("bb956f275f1301213274ab14069f91a1ec6d23dbba3c263b7401895c1a0580e1" default)))
+ '(company-clang-arguments (quote ("-I.. -I../include")))
  '(display-battery-mode t)
  '(flycheck-clang-include-path (list "include" "." "../include"))
  '(flycheck-clang-includes nil)
- '(flycheck-clang-language-standard "c++17")
+ '(flycheck-clang-language-standard "c++11")
  '(inhibit-startup-screen t)
  '(org-babel-load-languages (quote ((emacs-lisp . t) (awk . t) (C . t))))
  '(package-archives
