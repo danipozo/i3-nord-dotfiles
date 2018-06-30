@@ -24,7 +24,7 @@
      ("marmalade" . "https://marmalade-repo.org/packages/"))))
  '(package-selected-packages
    (quote
-    (nord-theme haskell-mode f lsp-rust racer-mode toml-mode yasnippet company evil markdown-mode cargo rust-mode flycheck-rust which-key use-package robe magit latex-preview-pane rainbow-delimiters smex intero counsel irony undo-tree helm)))
+    (yasnippet-snippets nord-theme haskell-mode f lsp-rust racer-mode toml-mode yasnippet company evil markdown-mode cargo rust-mode flycheck-rust which-key use-package robe magit latex-preview-pane rainbow-delimiters smex intero counsel irony undo-tree helm)))
  '(ring-bell-function (quote ignore))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -81,6 +81,9 @@
 (use-package yasnippet
   :commands yas-minor-mode
   :hook (prog-mode . yas-minor-mode)
+  :ensure t)
+
+(use-package yasnippet-snippets
   :ensure t)
 
 ;; Rust
@@ -167,7 +170,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "PfEd" :family "Iosevka"))))
- '(mode-line ((t (:box nil :family "Fira Mono" :height 160)))))
+ '(mode-line ((t (:box nil :family "Iosevka" :height 153)))))
 
 
 ;;;; C/C++ stuff
