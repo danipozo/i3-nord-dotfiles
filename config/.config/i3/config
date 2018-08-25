@@ -23,8 +23,11 @@ exec compton
 # Set GNOME screensaver as current screensaver. Lock after 2 minutes of inactivity.
 exec xautolock -time 2 -locker "gnome-screensaver-command -l" -nowlocker "gnome-screensaver-command -l"
 
-# Execute Redshift GTK frontend. This gets Redshift in the system tray.
-exec redshift-gtk
+# Execute Redshift for screen blue light reduction.
+exec redshift -l 37:-3
+
+# Set click on tap behaviour for touchpad.
+exec xinput set-prop 13 278 1
 
 # Put nm-applet in the system tray.
 exec nm-applet
