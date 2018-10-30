@@ -27,9 +27,9 @@ exec xautolock -time 2 -locker "gnome-screensaver-command -l" -nowlocker "gnome-
 exec redshift -l 37:-3
 
 # Set click on tap behaviour for touchpad.
-exec xinput set-prop 13 278 1
+exec xinput set-prop 12 285 1
 
-# Put nm-applet in the system tray.
+# Put Network Manager applet in the system tray.
 exec nm-applet
 
 

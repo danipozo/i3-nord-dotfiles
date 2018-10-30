@@ -10,13 +10,20 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-clang-arguments (quote ("-I.. -I../include")))
+ '(company-auto-complete t)
+ '(company-auto-complete-chars (quote (32 95 41 119 46)))
+ '(company-clang-arguments (quote ("-I.. -I../include -I. -Iinclude")))
  '(display-battery-mode t)
- '(flycheck-clang-include-path (list "include" "." "../include"))
+ '(flycheck-clang-include-path
+   (quote
+    ("./include" "." "/usr/include/ImageMagick-7" "../include")))
  '(flycheck-clang-includes nil)
  '(flycheck-clang-language-standard "c++11")
+ '(flycheck-gcc-include-path (quote ("../include" "." "include")))
+ '(flycheck-gcc-includes nil)
  '(inhibit-startup-screen t)
- '(org-babel-load-languages (quote ((emacs-lisp . t) (awk . t) (C . t))))
+ '(lsp-ui-flycheck-enable t)
+ '(org-babel-load-languages (quote ((emacs-lisp . t) (C . t))))
  '(package-archives
    (quote
     (("melpa" . "https://melpa.org/packages/")
@@ -24,7 +31,7 @@
      ("marmalade" . "https://marmalade-repo.org/packages/"))))
  '(package-selected-packages
    (quote
-    (yasnippet-snippets nord-theme haskell-mode f lsp-rust racer-mode toml-mode yasnippet company evil markdown-mode cargo rust-mode flycheck-rust which-key use-package robe magit latex-preview-pane rainbow-delimiters smex intero counsel irony undo-tree helm)))
+    (company-lsp lsp-ui lsp-mode org-ref evil-org evil-escape py-autopep8 elpy yasnippet-snippets nord-theme haskell-mode f lsp-rust racer-mode toml-mode yasnippet company evil markdown-mode cargo rust-mode flycheck-rust which-key use-package robe magit latex-preview-pane rainbow-delimiters smex intero counsel irony undo-tree helm)))
  '(ring-bell-function (quote ignore))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -40,10 +47,31 @@
 
 ;; Evil
 (use-package evil
-             :ensure t)
+  :ensure t
+  :init (evil-mode 1))
+
+(define-key evil-ex-map "e" 'helm-find-files)
+(define-key evil-ex-map "b" 'helm-mini)
+(define-key evil-motion-state-map "j" 'evil-backward-char)
+(define-key evil-motion-state-map "ñ" 'evil-forward-char)
+(define-key evil-motion-state-map "k" 'evil-next-line)
+(define-key evil-motion-state-map "l" 'evil-previous-line)
+
+(use-package evil-escape
+  :ensure t
+  :init (evil-escape-mode 1))
+
+(setq-default evil-escape-key-sequence "kk")
+(setq-default evil-escape-delay 0.2)
+
+(use-package evil-org
+  :hook (org-mode . evil-org-mode)
+  :ensure t)
+  
 
 ;; -- Comodity stuff
 (use-package recentf
+  :ensure t
   :init
   (setq recentf-exclude '("/\\.git/.*\\'"
                           "/elpa/.*\\'"
@@ -57,8 +85,14 @@
 (use-package magit
              :ensure t)
 
+(electric-pair-mode 1)
+
+(global-set-key (kbd "C-<tab>") 'dabbrev-expand)
+
 ;; -- Programming stuff
 ;; Misc
+
+(add-hook 'prog-mode-hook 'linum-mode)
 
 (setq-default show-trailing-whitespace t)
 
@@ -86,14 +120,24 @@
 (use-package yasnippet-snippets
   :ensure t)
 
+;; Python
+(use-package elpy
+  :hook (python-mode . elpy-mode)
+  :ensure t)
+
+;;(setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+(add-hook 'elpy-mode-hook 'flycheck-mode)
+
+(use-package py-autopep8
+	      :ensure t
+	      :hook (elpy-mode . py-autopep8-enable-on-save))
+
 ;; Rust
 (use-package cargo
   :commands cargo-minor-mode
   :hook (rust-mode . cargo-minor-mode)
   :ensure t)
 
-(use-package flycheck-rust
-  :ensure t)
 
 (use-package toml-mode
   :mode (("\\.toml\\'" . toml-mode))
@@ -103,17 +147,31 @@
     :mode (("\\.rs\\'" . rust-mode))
     :init
     (setq rust-format-on-save t))
-;; (use-package lsp-mode
-;;     :init
-;;     (add-hook 'prog-mode-hook 'lsp-mode)
-;;     :config
-;;     (use-package lsp-flycheck
-;;         :ensure f
-;;         :after flycheck)
-;;     :ensure t)
-;; (use-package lsp-rust
-;;   :after lsp-mode
-;;   :ensure t)
+
+(add-hook 'rust-mode-hook 'company-mode)
+
+
+(use-package lsp-mode
+    :ensure t)
+
+(use-package lsp-ui
+  :after lsp-mode
+  :hook (lsp-mode . lsp-ui-mode)
+  :ensure t)
+
+(use-package lsp-rust
+  :after lsp-mode
+  :init (setq lsp-rust-rls-command '("rustup" "run" "stable" "rls"))
+  :hook (rust-mode . lsp-rust-enable)
+  :ensure t)
+
+(use-package company-lsp
+  :init (push 'company-lsp company-backends)
+  :ensure t)
+
+(use-package flycheck-rust
+  :ensure t
+  :hook (rust-mode . flycheck-mode))
 
 ;; (with-eval-after-load 'lsp-mode
 ;;   (setq lsp-rust-rls-command '("rustup" "run" "nightly" "rls"))
@@ -213,13 +271,10 @@
  'text-scale-mode-hook
  'update-org-latex-fragment-scale)
 
-;; -- Time logging
-(add-hook 'org-clock-in-hook 'save-buffer)
-(add-hook 'org-clock-out-hook 'save-buffer)
-
-(find-file-noselect "~/timelog.org")
-
 ;; ;; Writing math fast
 ;; (use-package cdlatex :ensure t)
 ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
 (put 'upcase-region 'disabled nil)
+
+(use-package org-ref
+  :ensure t)
